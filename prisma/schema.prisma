@@ -1,0 +1,71 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+generator client {
+  provider = "prisma-client-js"
+}
+model Organization {
+  id          String          @id @default(cuid())
+  name        String          @unique
+  slug        String          @unique
+  website     String
+  logoUrl     String?
+  description String?
+  isLab       Boolean         @default(true)
+  isProvider  Boolean         @default(false)
+  models      Model[]
+  providers   ModelProvider[]
+  createdAt   DateTime        @default(now())
+}
+model Model {
+  id              String           @id @default(cuid())
+  name            String
+  slug            String           @unique
+  organizationId  String
+  organization    Organization     @relation(fields: [organizationId], references: [id])
+  description     String
+  type            String           @default("chat")
+  modalities      String[]
+  contextWindow   Int
+  maxOutputTokens Int
+  inputPricePerM  Float
+  outputPricePerM Float
+  releaseDate     DateTime
+  license         String           @default("Proprietary")
+  isFeatured      Boolean          @default(false)
+  scores          BenchmarkScore[]
+  providers       ModelProvider[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+model Benchmark {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  category    String
+  maxScore    Float?
+  description String?
+  scores      BenchmarkScore[]
+}
+model BenchmarkScore {
+  id          String    @id @default(cuid())
+  modelId     String
+  model       Model     @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  benchmarkId String
+  benchmark   Benchmark @relation(fields: [benchmarkId], references: [id], onDelete: Cascade)
+  score       Float
+  @@unique([modelId, benchmarkId])
+}
+model ModelProvider {
+  id              String       @id @default(cuid())
+  modelId         String
+  model           Model        @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  latencyMs       Int?
+  throughputTps   Float?
+  inputPricePerM  Float
+  outputPricePerM Float
+  status          String       @default("active")
+  @@unique([modelId, organizationId])
+}
