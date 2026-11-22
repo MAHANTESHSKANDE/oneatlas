@@ -1,14 +1,12 @@
-export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const search = searchParams.get("search") || "";
-    const org = searchParams.get("org");
-    const modality = searchParams.get("modality");
-    const type = searchParams.get("type");
-    const sort = searchParams.get("sort") || "featured";
+    const search = req.nextUrl.searchParams.get("search") || "";
+    const org = req.nextUrl.searchParams.get("org");
+    const modality = req.nextUrl.searchParams.get("modality");
+    const type = req.nextUrl.searchParams.get("type");
+    const sort = req.nextUrl.searchParams.get("sort") || "featured";
     const where: any = {};
     if (search) {
       where.OR = [
@@ -34,7 +32,8 @@ export async function GET(req: NextRequest) {
       },
     });
     return NextResponse.json({ success: true, count: models.length, data: models });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.digest?.startsWith?.("NEXT_")) throw error;
     return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 });
   }
 }

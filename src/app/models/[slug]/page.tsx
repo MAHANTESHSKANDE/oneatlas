@@ -1,25 +1,45 @@
-import { notFound } from "next/navigation";
+"use client";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { formatPrice, formatTokens } from "@/lib/utils";
 import Link from "next/link";
 import { ArrowLeft, Server, Award } from "lucide-react";
-async function getModel(slug: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/models/${slug}`,
-    { cache: "no-store" }
-  );
-  if (!res.ok) return null;
-  const json = await res.json();
-  return json.data;
-}
-export default async function ModelDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const model = await getModel(slug);
-  if (!model) notFound();
+export default function ModelDetailPage() {
+  const params = useParams();
+  const slug = params?.slug as string;
+  const [model, setModel] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    if (!slug) return;
+    fetch(`/api/models/${slug}`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success) setModel(json.data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [slug]);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans">
+        <Navbar />
+        <div className="max-w-5xl mx-auto px-4 py-16 text-center text-zinc-400">
+          Loading model specifications...
+        </div>
+      </div>
+    );
+  }
+  if (!model) {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans">
+        <Navbar />
+        <div className="max-w-5xl mx-auto px-4 py-16 text-center text-zinc-400">
+          Model not found. <Link href="/" className="text-cyan-400 underline">Back to catalog</Link>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans">
       <Navbar />
@@ -27,13 +47,11 @@ export default async function ModelDetailPage({
         <Link href="/" className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white mb-6">
           <ArrowLeft className="h-4 w-4" /> Back to Catalog
         </Link>
-        {/* Header */}
         <div className="border-b border-zinc-800 pb-8 mb-8">
           <span className="text-sm font-mono text-cyan-400 uppercase tracking-widest">{model.organization?.name}</span>
           <h1 className="text-4xl font-extrabold text-white mt-1 mb-3">{model.name}</h1>
           <p className="text-zinc-400 text-base max-w-3xl leading-relaxed">{model.description}</p>
         </div>
-        {/* Specifications Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/40">
             <span className="text-xs text-zinc-500 uppercase font-mono">Context Window</span>
@@ -52,7 +70,6 @@ export default async function ModelDetailPage({
             <p className="text-xl font-bold text-emerald-400 mt-1">{formatPrice(model.outputPricePerM)} / 1M</p>
           </div>
         </div>
-        {/* Benchmark Scores */}
         <div className="mb-10">
           <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-4">
             <Award className="h-5 w-5 text-amber-400" /> Benchmark Evaluations
@@ -67,7 +84,6 @@ export default async function ModelDetailPage({
             ))}
           </div>
         </div>
-        {/* Supported Inference Providers */}
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-4">
             <Server className="h-5 w-5 text-blue-400" /> Available Inference Providers
