@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sparkles, BarChart2, Layers, Cpu, Search } from "lucide-react";
+import { Suspense } from "react";
 
-export function Navbar({ onOpenSearch }: { onOpenSearch?: () => void }) {
+function NavContent({ onOpenSearch }: { onOpenSearch?: () => void }) {
   const pathname = usePathname();
 
   const navLinks = [
@@ -59,5 +60,15 @@ export function Navbar({ onOpenSearch }: { onOpenSearch?: () => void }) {
         </div>
       </div>
     </header>
+  );
+}
+
+export function Navbar({ onOpenSearch }: { onOpenSearch?: () => void }) {
+  return (
+    <Suspense fallback={
+      <header className="h-16 w-full border-b border-zinc-800 bg-zinc-950/80" />
+    }>
+      <NavContent onOpenSearch={onOpenSearch} />
+    </Suspense>
   );
 }
