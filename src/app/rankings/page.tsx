@@ -1,8 +1,7 @@
+export const dynamic = 'force-dynamic';
 import { Navbar } from "@/components/Navbar";
 import { prisma } from "@/lib/prisma";
-import { Trophy, TrendingUp } from "lucide-react";
-
-
+import { Trophy } from "lucide-react";
 export default async function RankingsPage() {
   const benchmarks = await prisma.benchmark.findMany({
     include: {
@@ -16,7 +15,6 @@ export default async function RankingsPage() {
       },
     },
   });
-
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans">
       <Navbar />
@@ -26,7 +24,6 @@ export default async function RankingsPage() {
           <h1 className="text-3xl font-extrabold text-white mt-1">Leaderboards & Benchmarks</h1>
           <p className="text-zinc-400 text-sm mt-1">Comparative performance scores across industry standard evaluations.</p>
         </div>
-
         <div className="space-y-8">
           {benchmarks.map((bench) => (
             <div key={bench.id} className="rounded-xl border border-zinc-800 bg-zinc-900/30 overflow-hidden">
@@ -42,7 +39,6 @@ export default async function RankingsPage() {
                   {bench.category}
                 </span>
               </div>
-
               <div className="p-4">
                 <table className="w-full text-left text-sm">
                   <thead>

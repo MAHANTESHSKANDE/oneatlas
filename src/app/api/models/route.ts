@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 export async function GET(req: NextRequest) {
@@ -15,15 +16,9 @@ export async function GET(req: NextRequest) {
         { description: { contains: search, mode: "insensitive" } },
       ];
     }
-    if (org && org !== "all") {
-      where.organization = { slug: org };
-    }
-    if (type && type !== "all") {
-      where.type = type;
-    }
-    if (modality && modality !== "all") {
-      where.modalities = { has: modality };
-    }
+    if (org && org !== "all") where.organization = { slug: org };
+    if (type && type !== "all") where.type = type;
+    if (modality && modality !== "all") where.modalities = { has: modality };
     let orderBy: any = { isFeatured: "desc" };
     if (sort === "price-low") orderBy = { inputPricePerM: "asc" };
     if (sort === "price-high") orderBy = { inputPricePerM: "desc" };
@@ -34,17 +29,12 @@ export async function GET(req: NextRequest) {
       orderBy,
       include: {
         organization: true,
-        scores: {
-          include: { benchmark: true },
-        },
-        providers: {
-          include: { organization: true },
-        },
+        scores: { include: { benchmark: true } },
+        providers: { include: { organization: true } },
       },
     });
     return NextResponse.json({ success: true, count: models.length, data: models });
   } catch (error) {
-    console.error("Error fetching models:", error);
     return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -1,9 +1,8 @@
+export const dynamic = 'force-dynamic';
 import { Navbar } from "@/components/Navbar";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Globe, Cpu } from "lucide-react";
-
-
 export default async function ProvidersPage() {
   const organizations = await prisma.organization.findMany({
     include: {
@@ -12,7 +11,6 @@ export default async function ProvidersPage() {
     },
     orderBy: { name: "asc" },
   });
-
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans">
       <Navbar />
@@ -22,7 +20,6 @@ export default async function ProvidersPage() {
           <h1 className="text-3xl font-extrabold text-white mt-1">AI Labs & Inference Providers</h1>
           <p className="text-zinc-400 text-sm mt-1">Directory of leading foundational labs and high-performance inference platforms.</p>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {organizations.map((org) => (
             <div key={org.id} className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/40 flex flex-col justify-between">
@@ -45,9 +42,7 @@ export default async function ProvidersPage() {
                     )}
                   </div>
                 </div>
-
                 <p className="text-sm text-zinc-400 mb-4">{org.description}</p>
-
                 {org.models.length > 0 && (
                   <div className="mb-4">
                     <span className="text-xs text-zinc-500 font-mono uppercase block mb-1.5">Developed Models:</span>
@@ -65,7 +60,6 @@ export default async function ProvidersPage() {
                   </div>
                 )}
               </div>
-
               <div className="pt-4 border-t border-zinc-800/80 flex items-center justify-between">
                 <a
                   href={org.website}
