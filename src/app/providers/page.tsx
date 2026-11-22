@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Globe, Cpu } from "lucide-react";
 
-export const revalidate = 60;
 
 export default async function ProvidersPage() {
   const organizations = await prisma.organization.findMany({

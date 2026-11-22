@@ -2,7 +2,6 @@ import { Navbar } from "@/components/Navbar";
 import { prisma } from "@/lib/prisma";
 import { Trophy, TrendingUp } from "lucide-react";
 
-export const revalidate = 60;
 
 export default async function RankingsPage() {
   const benchmarks = await prisma.benchmark.findMany({
