@@ -1,4 +1,3 @@
-"$compare = @'
 "use client";
 
 import { useSearchParams } from "next/navigation";
@@ -132,4 +131,3 @@ export default function ComparePage() {
     </div>
   );
 }
-'@; [System.IO.File]::WriteAllText("$PWD/src/app/compare/page.tsx", $compare, (New-Object System.Text.UTF8Encoding($false)))
